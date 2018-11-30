@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SCDTanks.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,5 +18,6 @@ namespace SCDTanks
         //MOVE、FIRE
         public static string MOVE = "MOVE";
         public static string FIRE = "FIRE";
+        public static ReceiveInfo NowReceiveInfo { get; set; }
     }
 }
