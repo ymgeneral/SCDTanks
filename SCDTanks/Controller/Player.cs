@@ -5,20 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Web.Http;
+using SCDTanks.Model;
 
 namespace SCDTanks.Controller
 {
     public class PlayerController: ApiController
     {
         [HttpPost]
-        public JsonRequest<List<TanksAction>> Action()
+        public JsonRequest<List<TanksAction>> Action(ReceiveInfo receiveInfo)
         {
             return null;
         }
         [HttpPost]
-        public JsonRequest<string> Init()
+        public JsonRequest<string> Init(ReceiveInfo receiveInfo)
         {
-            return null;
+            JsonRequest<string> json = new JsonRequest<string>();
+            json.Action = @"/init";
+            json.Code = "0";
+            json.Msg = "succeeded";
+            json.OK = true;
+            json.Data = null;
+            return json;
         }
     }
 }
