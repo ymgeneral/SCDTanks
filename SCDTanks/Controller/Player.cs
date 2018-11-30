@@ -14,11 +14,13 @@ namespace SCDTanks.Controller
         [HttpPost]
         public JsonRequest<List<TanksAction>> Action(ReceiveInfo receiveInfo)
         {
+            General.NowReceiveInfo = receiveInfo;
             return null;
         }
         [HttpPost]
         public JsonRequest<string> Init(ReceiveInfo receiveInfo)
         {
+            General.NowReceiveInfo = receiveInfo;
             JsonRequest<string> json = new JsonRequest<string>();
             json.Action = @"/init";
             json.Code = "0";
