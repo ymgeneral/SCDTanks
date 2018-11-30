@@ -90,8 +90,9 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\JsonRequest.cs" />
-	<Compile Include="Model\Tanks\AMTank.cs" />
+    <Compile Include="Model\Tanks\AMTank.cs" />
     <Compile Include="Model\Tanks\C99Tank.cs" />
+    <Compile Include="Model\Tanks\ITankAction.cs" />
     <Compile Include="Model\Tanks\T90Tank.cs" />
     <Compile Include="Model\Tanks\K2Tank.cs" />
     <Compile Include="Model\Tanks\Tank.cs" />
