@@ -11,14 +11,14 @@ namespace SCDTanks.Controller
     public class PlayerController: ApiController
     {
         [HttpPost]
-        public string Action()
+        public JsonRequest<List<TanksAction>> Action()
         {
-            return "123";
+            return null;
         }
         [HttpPost]
-        public string Init()
+        public JsonRequest<string> Init()
         {
-            return "123";
+            return null;
         }
     }
 }
