@@ -18,6 +18,5 @@ namespace SCDTanks
         //MOVE、FIRE
         public static string MOVE = "MOVE";
         public static string FIRE = "FIRE";
-        public static ReceiveInfo NowReceiveInfo { get; set; }
     }
 }

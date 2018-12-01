@@ -81,6 +81,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algorithm\ANode.cs" />
+    <Compile Include="Algorithm\Astar.cs" />
     <Compile Include="Controller\Player.cs" />
     <Compile Include="General.cs" />
     <Compile Include="MainForm.cs">

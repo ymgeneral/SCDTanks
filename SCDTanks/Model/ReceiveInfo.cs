@@ -32,7 +32,7 @@ namespace SCDTanks.Model
         [JsonProperty(PropertyName = "colLen")]
         public string ColLen { get; set; }
         [JsonProperty(PropertyName = "map")]
-        public string[][] Map { get; set; }
+        public string[,] Map { get; set; }
     }
     public class TeamInfo
     {
