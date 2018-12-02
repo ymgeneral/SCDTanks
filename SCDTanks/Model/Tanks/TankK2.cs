@@ -1,8 +1,8 @@
 ﻿namespace SCDTanks.Model.Tanks
 {
-    class K2Tank : Tank, ITankAction
+    class TankK2 : Tank, ITankAction
     {
-        public K2Tank()
+        public TankK2()
         {
         }
     }

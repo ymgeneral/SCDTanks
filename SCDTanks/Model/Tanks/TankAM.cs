@@ -1,8 +1,8 @@
 ﻿namespace SCDTanks.Model.Tanks
 {
-    public class AMTank : Tank, ITankAction
+    public class TankAM : Tank, ITankAction
     {
-        public AMTank()
+        public TankAM()
         {
             this.Name = "AMT";
         }
