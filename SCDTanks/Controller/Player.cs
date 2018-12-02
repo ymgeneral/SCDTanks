@@ -28,8 +28,8 @@ namespace SCDTanks.Controller
             json.Msg = "succeeded";
             json.OK = true;
             json.Data = null;
-            Astar astar = new Astar();
-            astar.Star(new Point(1, 1), new Point(14, 15), receiveInfo.MapInfo.Map);
+            TanksController tanks = new TanksController(receiveInfo);
+            List<TankInfo> tankInfos= tanks.GetCommand();
             return json;
         }
     }

@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="Algorithm\ANode.cs" />
     <Compile Include="Algorithm\Astar.cs" />
+    <Compile Include="Algorithm\TanksController.cs" />
     <Compile Include="Controller\Player.cs" />
     <Compile Include="General.cs" />
     <Compile Include="MainForm.cs">
@@ -92,6 +93,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\JsonRequest.cs" />
+    <Compile Include="Model\TankActionEnum.cs" />
     <Compile Include="Model\Tanks\AMTank.cs" />
     <Compile Include="Model\Tanks\C99Tank.cs" />
     <Compile Include="Model\Tanks\ITankAction.cs" />

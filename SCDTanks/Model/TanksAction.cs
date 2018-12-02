@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SCDTanks
 {
+    /// <summary>
+    /// 坦克行为
+    /// </summary>
     public class TanksAction
     {
         [JsonProperty(PropertyName = "tId")]
