@@ -14,22 +14,7 @@ namespace SCDTanks.Algorithm
     public class TanksController
     {
 
-        /// <summary>
-        /// Boss
-        /// </summary>
-        public TankInfo BossInfo { get; set; }
-        /// <summary>
-        /// 敌方坦克
-        /// </summary>
-        public List<TankInfo> EnemyTanks { get; set; }
-        /// <summary>
-        /// 游戏信息
-        /// </summary>
-        private ReceiveInfo gameInfo;
-        /// <summary>
-        /// 复活币
-        /// </summary>
-        private List<Point> GodB { get; set; }
+
         /// <summary>
         /// 敌方表示
         /// </summary>
@@ -41,10 +26,11 @@ namespace SCDTanks.Algorithm
         private List<Point> fogs;
         public TanksController(ReceiveInfo info)
         {
-            GodB = new List<Point>();
-            EnemyTanks = new List<TankInfo>();
+            SharedResources.GodB = new List<Point>();
+            SharedResources.EnemyTanks = new List<TankInfo>();
             fogs = new List<Point>();
-            gameInfo = info;
+            SharedResources.GameInfo = info;
+            SharedResources.NextPoint.Clear();
             FillTanks();
         }
 
@@ -55,19 +41,42 @@ namespace SCDTanks.Algorithm
             List<TankInfo> nearEnemys;//附近敌人
             List<TankInfo> nearFriendly;//附近友军
             nearEnemys = FindNearEnemy();
-            if (EnemyTanks.Count > 0)
+            if (SharedResources.EnemyTanks.Count > 0)
             {
-                //未发现敌人
+                FoundEnemy();
             }
-            if (GodB.Count == 0)
+            else
             {
-                //未发现复活币
+                NotFindEnemy();
             }
-            if (BossInfo == null)
+            foreach (TankInfo info in SharedResources.OurTanks)
             {
-                //未发现boss
+                list.Add(info.GetAction());
             }
             return list;
+        }
+        private void FoundEnemy()
+        {
+
+        }
+        private void NotFindEnemy()
+        {
+            TankActionEnum tankAction = TankActionEnum.Find;
+
+            if (SharedResources.BossInfo != null)
+            {
+                tankAction = TankActionEnum.Boss;
+                //未发现boss
+            }
+            if (SharedResources.GodB.Count > 0)
+            {
+                tankAction = TankActionEnum.God;
+                //未发现复活币
+            }
+            foreach (TankInfo info in SharedResources.OurTanks)
+            {
+                info.NextCommand = tankAction;
+            }
         }
         ///// <summary>
         ///// 获取我方坦克下一次行动指令
@@ -171,7 +180,7 @@ namespace SCDTanks.Algorithm
         {
             List<TankInfo> tankInfos = new List<TankInfo>();
             int offset = 3;
-            foreach (TankInfo etank in EnemyTanks)
+            foreach (TankInfo etank in SharedResources.EnemyTanks)
             {
                 switch (etank.Adv)
                 {
@@ -181,7 +190,7 @@ namespace SCDTanks.Algorithm
                 }
                 if (etank.Location != null)
                 {
-                    foreach (TankInfo otank in General.OurTanks)
+                    foreach (TankInfo otank in SharedResources.OurTanks)
                     {
 
                         if (Math.Abs(otank.Location.Value.X - etank.Location.Value.X) < offset && Math.Abs(otank.Location.Value.Y - etank.Location.Value.Y) < offset)
@@ -196,55 +205,55 @@ namespace SCDTanks.Algorithm
         }
         private void FillTanks()
         {
-            if (gameInfo.Boss.Tanks != null && gameInfo.Boss.Tanks.Count > 0)
-                BossInfo = gameInfo.Boss.Tanks[0];
+            if (SharedResources.GameInfo.Boss.Tanks != null && SharedResources.GameInfo.Boss.Tanks.Count > 0)
+                SharedResources.BossInfo = SharedResources.GameInfo.Boss.Tanks[0];
 
-            General.GodCount = gameInfo.Gold;
-            if (gameInfo.Team.Equals("tB"))
+            SharedResources.GodCount = SharedResources.GameInfo.Gold;
+            if (SharedResources.GameInfo.Team.Equals("tB"))
             {
-                if (General.OurTanks == null)
+                if (SharedResources.OurTanks == null)
                 {
-                    General.OurTanks = new List<TankInfo>();
-                    General.OurTanks.AddRange(gameInfo.TeamB.Tanks);
+                    SharedResources.OurTanks = new List<TankInfo>();
+                    SharedResources.OurTanks.AddRange(SharedResources.GameInfo.TeamB.Tanks);
                 }
                 else
                 {
-                    foreach (TankInfo ftan in General.OurTanks)
+                    foreach (TankInfo ftan in SharedResources.OurTanks)
                     {
-                        ftan.UpdateInfo(gameInfo.TeamB.Tanks);
+                        ftan.UpdateInfo(SharedResources.GameInfo.TeamB.Tanks);
                     }
                 }
-                EnemyTanks.AddRange(gameInfo.TeamC.Tanks);
+                SharedResources.EnemyTanks.AddRange(SharedResources.GameInfo.TeamC.Tanks);
                 enemy = "C";
             }
-            if (gameInfo.Team.Equals("tC"))
+            if (SharedResources.GameInfo.Team.Equals("tC"))
             {
-                if (General.OurTanks == null)
+                if (SharedResources.OurTanks == null)
                 {
-                    General.OurTanks = new List<TankInfo>();
-                    General.OurTanks.AddRange(gameInfo.TeamB.Tanks);
+                    SharedResources.OurTanks = new List<TankInfo>();
+                    SharedResources.OurTanks.AddRange(SharedResources.GameInfo.TeamB.Tanks);
                 }
                 else
                 {
-                    foreach (TankInfo ftan in General.OurTanks)
+                    foreach (TankInfo ftan in SharedResources.OurTanks)
                     {
-                        ftan.UpdateInfo(gameInfo.TeamC.Tanks);
+                        ftan.UpdateInfo(SharedResources.GameInfo.TeamC.Tanks);
                     }
                 }
-                EnemyTanks.AddRange(gameInfo.TeamB.Tanks);
+                SharedResources.EnemyTanks.AddRange(SharedResources.GameInfo.TeamB.Tanks);
                 enemy = "B";
             }
-            mapRow = gameInfo.MapInfo.Map.GetLength(0);
-            mapCol = gameInfo.MapInfo.Map.GetLength(1);
+            mapRow = SharedResources.GameInfo.MapInfo.Map.GetLength(0);
+            mapCol = SharedResources.GameInfo.MapInfo.Map.GetLength(1);
             for (int i = 0; i < mapRow; i++)
             {
                 for (int j = 0; j < mapCol; j++)
                 {
-                    switch (gameInfo.MapInfo.Map[i, j])
+                    switch (SharedResources.GameInfo.MapInfo.Map[i, j])
                     {
                         case "M1": break;
                         case "M2":
-                            GodB.Add(new Point(i, j));
+                            SharedResources.GodB.Add(new Point(i, j));
                             break;
                         case "M3":
                             fogs.Add(new Point(i, j));
@@ -256,8 +265,8 @@ namespace SCDTanks.Algorithm
                         case "M7": break;
                         case "M8": break;
                         case "A1":
-                            if (BossInfo != null)
-                                BossInfo.Location = new Point(i, j);
+                            if (SharedResources.BossInfo != null)
+                                SharedResources.BossInfo.Location = new Point(i, j);
                             break;
                         case "B1":
                         case "B2":
@@ -266,11 +275,11 @@ namespace SCDTanks.Algorithm
                         case "B5":
                             if (enemy == "B")
                             {
-                                SetEnemyLocation(new Point(i, j), gameInfo.MapInfo.Map[i, j]);
+                                SetEnemyLocation(new Point(i, j), SharedResources.GameInfo.MapInfo.Map[i, j]);
                             }
                             else
                             {
-                                SetOurLocation(new Point(i, j), gameInfo.MapInfo.Map[i, j]);
+                                SetOurLocation(new Point(i, j), SharedResources.GameInfo.MapInfo.Map[i, j]);
                             }
                             break;
                         case "C1":
@@ -280,11 +289,11 @@ namespace SCDTanks.Algorithm
                         case "C5":
                             if (enemy == "C")
                             {
-                                SetEnemyLocation(new Point(i, j), gameInfo.MapInfo.Map[i, j]);
+                                SetEnemyLocation(new Point(i, j), SharedResources.GameInfo.MapInfo.Map[i, j]);
                             }
                             else
                             {
-                                SetOurLocation(new Point(i, j), gameInfo.MapInfo.Map[i, j]);
+                                SetOurLocation(new Point(i, j), SharedResources.GameInfo.MapInfo.Map[i, j]);
                             }
                             break;
                     }
@@ -298,7 +307,7 @@ namespace SCDTanks.Algorithm
         /// <param name="tankId"></param>
         private void SetEnemyLocation(Point point, string tankId)
         {
-            TankInfo info = EnemyTanks.FirstOrDefault(p => p.TId.Equals(tankId));
+            TankInfo info = SharedResources.EnemyTanks.FirstOrDefault(p => p.TId.Equals(tankId));
             if (info != null)
                 info.Location = point;
         }
@@ -309,7 +318,7 @@ namespace SCDTanks.Algorithm
         /// <param name="tankId"></param>
         private void SetOurLocation(Point point, string tankId)
         {
-            TankInfo info = General.OurTanks.FirstOrDefault(p => p.TId.Equals(tankId));
+            TankInfo info = SharedResources.OurTanks.FirstOrDefault(p => p.TId.Equals(tankId));
             if (info != null)
                 info.Location = point;
         }

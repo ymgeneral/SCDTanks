@@ -48,8 +48,16 @@ namespace SCDTanks
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Rectangle rec = Rectangle.FromLTRB(3,0,5,1);
-            Console.WriteLine(rec.Right);
+            string[,] maps = new string[int.Parse(SharedResources.GameInfo.MapInfo.RowLen), int.Parse(SharedResources.GameInfo.MapInfo.ColLen)];
+            Array.Copy(SharedResources.GameInfo.MapInfo.Map, maps, maps.Length);
+            for(int i=0;i< maps.GetLength(0); i++)
+            {
+                for(int j=0;j<maps.GetLength(1);j++)
+                {
+                    Console.Write(maps[i, j]+" ");
+                }
+                Console.WriteLine("");
+            }
         }
     }
 }

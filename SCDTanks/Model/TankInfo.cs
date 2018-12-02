@@ -78,6 +78,7 @@ namespace SCDTanks.Model
 
         public TanksAction GetAction()
         {
+            TanksAction action;
             ITankAction tankAction=null;
             switch(this.Adv)
             {
@@ -96,7 +97,27 @@ namespace SCDTanks.Model
             }
             if (tankAction != null)
             {
-                return tankAction.GetAction(this);
+                switch(this.NextCommand)
+                {
+                    case TankActionEnum.Attack:
+                        action=tankAction.Attack(this); break;
+                    case TankActionEnum.Boss:
+                        action=tankAction.Boss(this); break;
+                    case TankActionEnum.Defend:
+                        action=tankAction.Defend(this); break;
+                    case TankActionEnum.Find:
+                        action=tankAction.Find(this); break;
+                    case TankActionEnum.God:
+                        action=tankAction.God(this); break;
+                    case TankActionEnum.Null:
+                        action=tankAction.Null(this); break;
+                    case TankActionEnum.Retreat:
+                        action=tankAction.Retreat(this); break;
+                    case TankActionEnum.Support:
+                        action =tankAction.Support(this); break;
+                    default: action = tankAction.Null(this); break;
+                }
+                return action;
             }
             else
             {

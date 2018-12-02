@@ -9,6 +9,7 @@ namespace SCDTanks.Algorithm
 {
     public class ANode:IComparable
     {
+        public string Id { get; set; }
         /// <summary>
         /// 实际代价
         /// </summary>

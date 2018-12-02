@@ -22,7 +22,7 @@ namespace SCDTanks.Model
         /// <summary>
         /// 探路
         /// </summary>
-        Fint,
+        Find,
         /// <summary>
         /// 抢复活币
         /// </summary>

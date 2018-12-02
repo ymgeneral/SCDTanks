@@ -11,6 +11,7 @@ namespace SCDTanks.Algorithm
     {
         private List<ANode> closeList = new List<ANode>();
         private List<ANode> openList=new List<ANode>();
+        public string Team { get; set; }
         private Point endPoint;
         private Point starPoint;
         public ANode Star(Point ownpoint, Point tarPoint, ANode[,] map)
@@ -95,9 +96,9 @@ namespace SCDTanks.Algorithm
             //    return delta2 * 14 + (delta1 - delta2) * 10;
             //}
         }
-        public void Star(Point ownpoint, Point tarPoint, string[,] map)
+        public ANode Star(Point ownpoint, Point tarPoint, string[,] map)
         {
-            Star(ownpoint, tarPoint, GetMap(map));
+           return Star(ownpoint, tarPoint, GetMap(map));
         }
         private ANode[,] GetMap(string[,] map)
         {
@@ -120,6 +121,7 @@ namespace SCDTanks.Algorithm
                         default: isobs = true; break;
                     }
                     aNode = new ANode(new Point(i, j), 0, 0, isobs, null);
+                    aNode.Id = map[i, j];
                     aNodes[i, j] = aNode;
                 }
             }

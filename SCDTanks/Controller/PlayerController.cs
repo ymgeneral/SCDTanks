@@ -46,6 +46,7 @@ namespace SCDTanks.Controller
             json.Msg = "succeeded";
             json.OK = true;
             json.Data = null;
+            TanksController tanks = new TanksController(receiveInfo);
             return json;
         }
     }
