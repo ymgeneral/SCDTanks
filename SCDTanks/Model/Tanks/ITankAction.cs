@@ -1,6 +1,7 @@
-﻿namespace SCDTanks.Model.Tanks
+﻿namespace SCDTanks.Model
 {
     public interface ITankAction
     {
+        
     }
 }

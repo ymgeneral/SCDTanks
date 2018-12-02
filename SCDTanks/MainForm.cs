@@ -20,7 +20,9 @@ namespace SCDTanks
 
         private void Form1_Load(object sender, EventArgs e)
         {
-           
+            Point point = new Point(1, 1);
+            Point point1 = new Point(1, 1);
+            Console.WriteLine((point == point1).ToString());
         }
 
         private void button1_Click(object sender, EventArgs e)

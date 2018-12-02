@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Web.Http;
 using SCDTanks.Model;
+using SCDTanks.Algorithm;
+using System.Drawing;
 
 namespace SCDTanks.Controller
 {
@@ -14,19 +16,20 @@ namespace SCDTanks.Controller
         [HttpPost]
         public JsonRequest<List<TanksAction>> Action(ReceiveInfo receiveInfo)
         {
-            General.NowReceiveInfo = receiveInfo;
+       
             return null;
         }
         [HttpPost]
         public JsonRequest<string> Init(ReceiveInfo receiveInfo)
         {
-            General.NowReceiveInfo = receiveInfo;
             JsonRequest<string> json = new JsonRequest<string>();
             json.Action = @"/init";
             json.Code = "0";
             json.Msg = "succeeded";
             json.OK = true;
             json.Data = null;
+            TanksController tanks = new TanksController(receiveInfo);
+            List<TankInfo> tankInfos= tanks.GetCommand();
             return json;
         }
     }

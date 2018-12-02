@@ -1,4 +1,4 @@
-﻿namespace SCDTanks.Model.Tanks
+﻿namespace SCDTanks.Model
 {
     /// <summary>
     /// 坦克优点

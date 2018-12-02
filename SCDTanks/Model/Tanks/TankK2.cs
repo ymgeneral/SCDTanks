@@ -1,4 +1,4 @@
-﻿namespace SCDTanks.Model.Tanks
+﻿namespace SCDTanks.Model
 {
     class TankK2 : Tank, ITankAction
     {
