@@ -1,9 +1,17 @@
 ﻿namespace SCDTanks.Model
 {
-    class K2Tank : Tank, ITankAction
+    /// <summary>
+    /// 输出
+    /// </summary>
+    class K2Tank :  ITankAction
     {
         public K2Tank()
         {
+        }
+
+        public TanksAction GetAction(TankInfo info)
+        {
+            return null;
         }
     }
 }

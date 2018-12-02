@@ -2,6 +2,6 @@
 {
     public interface ITankAction
     {
-        
+        TanksAction GetAction(TankInfo info);
     }
 }

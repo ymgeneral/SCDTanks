@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 namespace SCDTanks
 {
-    public class JsonRequest<T>
+    public class JsonResults<T>
     {
         [JsonProperty(PropertyName ="code")]
         public string Code { get; set; }

@@ -92,14 +92,15 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\JsonRequest.cs" />
-    <Compile Include="Model\TankActionEnum.cs" />
+    <Compile Include="Model\Tanks\ActionTypeEnum.cs" />
+    <Compile Include="Model\DirectionEnum.cs" />
+    <Compile Include="Model\JsonResults.cs" />
+    <Compile Include="Model\Tanks\TankActionEnum.cs" />
     <Compile Include="Model\Tanks\AMTank.cs" />
     <Compile Include="Model\Tanks\C99Tank.cs" />
     <Compile Include="Model\Tanks\ITankAction.cs" />
     <Compile Include="Model\Tanks\T90Tank.cs" />
     <Compile Include="Model\Tanks\K2Tank.cs" />
-    <Compile Include="Model\Tanks\Tank.cs" />
     <Compile Include="Model\Tanks\TankEnums.cs" />
     <Compile Include="Model\ReceiveInfo.cs" />
     <Compile Include="Model\TankInfo.cs" />

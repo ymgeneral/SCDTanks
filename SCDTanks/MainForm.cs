@@ -1,4 +1,5 @@
 ﻿using Microsoft.Owin.Hosting;
+using SCDTanks.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -43,6 +44,12 @@ namespace SCDTanks
         private void Write(string text)
         {
             richTextBox1.AppendText($"[{DateTime.Now.ToLongTimeString()}]:{text}");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Rectangle rec = Rectangle.FromLTRB(3,0,5,1);
+            Console.WriteLine(rec.Right);
         }
     }
 }

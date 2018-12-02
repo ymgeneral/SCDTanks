@@ -1,6 +1,13 @@
 ﻿namespace SCDTanks.Model
 {
-    class T90Tank:Tank,ITankAction
+    /// <summary>
+    /// 肉盾
+    /// </summary>
+    class T90Tank : ITankAction
     {
+        public TanksAction GetAction(TankInfo info)
+        {
+            return new TanksAction();
+        }
     }
 }

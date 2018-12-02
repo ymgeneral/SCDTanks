@@ -1,10 +1,18 @@
 ﻿namespace SCDTanks.Model
 {
-    public class AMTank : Tank, ITankAction
+    /// <summary>
+    /// 敏捷
+    /// </summary>
+    public class AMTank :  ITankAction
     {
         public AMTank()
         {
-            this.Name = "AMT";
+
+        }
+
+        public TanksAction GetAction(TankInfo info)
+        {
+            return null;
         }
     }
 }
