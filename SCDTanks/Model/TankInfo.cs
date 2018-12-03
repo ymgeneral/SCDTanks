@@ -80,25 +80,26 @@ namespace SCDTanks.Model
                 return tankAdv;
             }
         }
-        private TankActionEnum nextCommand = TankActionEnum.Null;
         /// <summary>
         /// 下一步指令
         /// </summary>
         public TankActionEnum NextCommand
         {
-            get { return nextCommand; }
-            set
-            {
-                LastCommand = nextCommand;
-                nextCommand = value;
-            }
+            get; set;
         }
         public TankActionEnum LastCommand { get; set; }
         /// <summary>
         /// 当前坐标
         /// </summary>
         public Point? Location { get; set; } = null;
-
+        /// <summary>
+        /// 待命目的地
+        /// </summary>
+        public Point? Destination
+        {
+            get;
+            set;
+        }
         public void UpdateInfo(List<TankInfo> infos)
         {
             TankInfo info = infos.FirstOrDefault(p => p.TId.Equals(this.TId));
@@ -109,33 +110,17 @@ namespace SCDTanks.Model
                 this.NextCommand = TankActionEnum.Null;
             }
         }
-
+        public bool Contrast(TankInfo info)
+        {
+            if (this.SheCheng > info.SheCheng)
+                return true;
+            return this.ShengYuShengMing * Gongji > (info.ShengYuShengMing + 1) * Gongji;
+        }
         public TanksAction GetAction(GameInfo game)
         {
             if (this.ActionBase != null)
             {
                 return this.ActionBase.GetNextAction(game, this);
-                //switch (this.NextCommand)
-                //{
-                //    case TankActionEnum.Attack:
-                //        action = tankAction.Attack(this); break;
-                //    case TankActionEnum.Boss:
-                //        action = tankAction.Boss(this); break;
-                //    case TankActionEnum.Defend:
-                //        action = tankAction.Defend(this); break;
-                //    case TankActionEnum.Find:
-                //        action = tankAction.Find(this); break;
-                //    case TankActionEnum.God:
-                //        action = tankAction.God(this); break;
-                //    case TankActionEnum.Null:
-                //        action = tankAction.Null(this); break;
-                //    case TankActionEnum.Retreat:
-                //        action = tankAction.Retreat(this); break;
-                //    case TankActionEnum.Support:
-                //        action = tankAction.Support(this); break;
-                //    default: action = tankAction.Null(this); break;
-                //}
-                //return action;
             }
             else
             {

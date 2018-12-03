@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -36,7 +37,7 @@ namespace SCDTanks
                 WebApp.Start<Startup>(so);
                 Write($"服务启动成功，监听端口：{port}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Write(ex.Message);
             }
@@ -48,6 +49,27 @@ namespace SCDTanks
 
         private void Button2_Click(object sender, EventArgs e)
         {
+            baseclass baseclass = new a();
+            baseclass.Star();
+        }
+        class baseclass
+        {
+            protected virtual void Test()
+            {
+                Debug.WriteLine("Base");
+            }
+
+            public void Star()
+            {
+                Test();
+            }
+        }
+        class a:baseclass
+        {
+            protected override void Test()
+            {
+                Debug.WriteLine("A");
+            }
         }
     }
 }

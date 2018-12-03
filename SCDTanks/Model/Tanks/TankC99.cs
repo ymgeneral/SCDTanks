@@ -10,27 +10,8 @@ namespace SCDTanks.Model
     {
         protected override TanksAction AbsGetAction(GameInfo controller, TankInfo info)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
-        protected override TanksAction Attack(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override TanksAction Boss(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void SetNextCommand()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected override TanksAction Support(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

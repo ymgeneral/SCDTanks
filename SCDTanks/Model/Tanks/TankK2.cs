@@ -7,12 +7,7 @@
     {
         protected override TanksAction AbsGetAction(GameInfo controller, TankInfo info)
         {
-            throw new System.NotImplementedException();
-        }
-
-        protected override void SetNextCommand()
-        {
-            throw new System.NotImplementedException();
+            return null;
         }
     }
 }

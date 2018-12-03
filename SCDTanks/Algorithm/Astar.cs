@@ -27,8 +27,11 @@ namespace SCDTanks.Algorithm
             {
                 
                 openList.Sort();
+                if(openList.Count==0)
+                {
+                    return map[ownpoint.X, ownpoint.Y];
+                }
                 aNode = openList[0];
-                Console.WriteLine(aNode.Position.X + "  " + aNode.Position.Y);
                 openList.Remove(aNode);
                 closeList.Add(aNode);
                 if (aNode.Position==tarPoint)
@@ -36,28 +39,28 @@ namespace SCDTanks.Algorithm
                     break;
                 }
                 //左
-                nextX = aNode.Position.X - 1;
-                if (nextX >= 0)
-                {
-                    AddOpenList(map[nextX, aNode.Position.Y], aNode);
-                }
-                //右
-                nextX = aNode.Position.X + 1;
-                if (nextX < col)
-                {
-                    AddOpenList(map[nextX, aNode.Position.Y], aNode);
-                }
-                //上
                 nextY = aNode.Position.Y - 1;
                 if (nextY >= 0)
                 {
-                    AddOpenList(map[aNode.Position.X, nextY], aNode);
+                    AddOpenList(map[aNode.Position.X,nextY], aNode);
+                }
+                //右
+                nextY = aNode.Position.Y + 1;
+                if (nextY < col)
+                {
+                    AddOpenList(map[aNode.Position.X,nextY], aNode);
+                }
+                //上
+                nextX = aNode.Position.X - 1;
+                if (nextX >= 0)
+                {
+                    AddOpenList(map[nextX,aNode.Position.Y], aNode);
                 }
                 //下 
-                nextY = aNode.Position.Y + 1;
-                if (nextY<row)
+                nextX = aNode.Position.X + 1;
+                if (nextX < row)
                 {
-                    AddOpenList(map[aNode.Position.X, nextY], aNode);
+                    AddOpenList(map[nextX,aNode.Position.Y], aNode);
                 }
             } while (true);
 

@@ -1,20 +1,88 @@
-﻿namespace SCDTanks.Model
+﻿using System.Collections.Generic;
+using System.Drawing;
+
+namespace SCDTanks.Model
 {
     /// <summary>
     /// 肉盾
     /// </summary>
-    class T90Tank : TankActionBase
+    class T90Tank :TankActionBase
     {
-        
-
         protected override TanksAction AbsGetAction(GameInfo controller, TankInfo info)
         {
-            throw new System.NotImplementedException();
+            if(info.Destination==null)
+            {
+                info.Destination = new Point(int.Parse(controller.SourceInfo.MapInfo.ColLen) / 2, int.Parse(controller.SourceInfo.MapInfo.RowLen) / 2);
+            }
+            if (base.Controller.GodCount == 0 && info.ShengYuShengMing == 1)
+            {
+                return base.Retreat();
+            }
+            if (controller.BossInfo.Location!=null)
+            {
+                if(controller.BossInfo.ShengYuShengMing<5)
+                {
+                    return base.Boss();
+                }
+                else
+                {
+                    return FindEnemy(true);
+                }
+            }
+            return FindEnemy(false);
+
+        }
+        private TanksAction FindEnemy(bool isfindBoss)
+        {
+            List<TankInfo> canAttTanks = base.CanAttackEnemy();
+            List<TankInfo> frindTanks = base.FindNearFriendly();
+            if (canAttTanks.Count > 0)
+            {
+                if (canAttTanks.Count >= frindTanks.Count)
+                {
+                    return Attack(canAttTanks);
+                }
+                else
+                {
+                    return base.Retreat();
+                }
+            }
+            List<TankInfo> enemyTanks = base.FindNearEnemy();
+            if (enemyTanks.Count > 0)
+            {
+                if (frindTanks.Count > enemyTanks.Count)
+                {
+                    foreach (TankInfo tinfo in frindTanks)
+                    {
+                        if (tinfo != null)
+                        {
+                            tinfo.NextCommand = TankActionEnum.Support;
+                        }
+                    }
+                    return base.Attack(canAttTanks);
+                }
+                if (enemyTanks.Count == 1)
+                {
+                    if (base.TankInfo.Contrast(enemyTanks[0]))
+                    {
+                        return base.Attack(canAttTanks);
+                    }
+                    else
+                    {
+                        return base.Retreat();
+                    }
+                }
+            }
+            else
+            {
+               return base.Find();
+            }
+            if (isfindBoss)
+            {
+                return Boss();
+            }
+                return base.Find();
         }
 
-        protected override void SetNextCommand()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

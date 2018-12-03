@@ -13,6 +13,7 @@ namespace SCDTanks.Model
     /// </summary>
     public class GameInfo
     {
+        public TankInfo Target { get; set; }
         /// <summary>
         /// 游戏信息
         /// </summary>
@@ -86,7 +87,7 @@ namespace SCDTanks.Model
                 if (SharedResources.OurTanks == null)
                 {
                     SharedResources.OurTanks = new List<TankInfo>();
-                    SharedResources.OurTanks.AddRange(SourceInfo.TeamB.Tanks);
+                    SharedResources.OurTanks.AddRange(SourceInfo.TeamC.Tanks);
                 }
                 else
                 {
