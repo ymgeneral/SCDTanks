@@ -3,44 +3,16 @@
     /// <summary>
     /// 肉盾
     /// </summary>
-    class T90Tank : ITankAction
+    class T90Tank : TankActionBase
     {
-        public TanksAction Attack(TankInfo info)
+        
+
+        protected override TanksAction AbsGetAction(GameInfo controller, TankInfo info)
         {
             throw new System.NotImplementedException();
         }
 
-        public TanksAction Boss(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public TanksAction Defend(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public TanksAction Find(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public TanksAction God(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public TanksAction Null(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public TanksAction Retreat(TankInfo info)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public TanksAction Support(TankInfo info)
+        protected override void SetNextCommand()
         {
             throw new System.NotImplementedException();
         }

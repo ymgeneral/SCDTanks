@@ -3,7 +3,7 @@
     /// <summary>
     /// 敏捷
     /// </summary>
-    public class AMTank :  ITankAction
+    public class AMTank :  TankActionBase
     {
         public AMTank()
         {

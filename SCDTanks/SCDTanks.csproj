@@ -83,7 +83,7 @@
   <ItemGroup>
     <Compile Include="Algorithm\ANode.cs" />
     <Compile Include="Algorithm\Astar.cs" />
-    <Compile Include="Algorithm\TanksController.cs" />
+    <Compile Include="Model\GameInfo.cs" />
     <Compile Include="Controller\PlayerController.cs" />
     <Compile Include="SharedResources.cs" />
     <Compile Include="MainForm.cs">
@@ -96,7 +96,7 @@
     <Compile Include="Model\DirectionEnum.cs" />
     <Compile Include="Model\JsonResults.cs" />
     <Compile Include="Model\Tanks\TankActionEnum.cs" />
-    <Compile Include="Model\Tanks\ITankAction.cs" />
+    <Compile Include="Model\Tanks\TankActionBase.cs" />
     <Compile Include="Model\Tanks\T90Tank.cs" />
     <Compile Include="Model\Tanks\TankAM.cs" />
     <Compile Include="Model\Tanks\TankC99.cs" />

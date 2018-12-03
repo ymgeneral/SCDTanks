@@ -120,8 +120,10 @@ namespace SCDTanks.Algorithm
                             break;
                         default: isobs = true; break;
                     }
-                    aNode = new ANode(new Point(i, j), 0, 0, isobs, null);
-                    aNode.Id = map[i, j];
+                    aNode = new ANode(new Point(i, j), 0, 0, isobs, null)
+                    {
+                        Id = map[i, j]
+                    };
                     aNodes[i, j] = aNode;
                 }
             }

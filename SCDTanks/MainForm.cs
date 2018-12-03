@@ -26,7 +26,7 @@ namespace SCDTanks
             Console.WriteLine((point == point1).ToString());
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             string port = numericUpDown1.Value.ToString();
             try
@@ -46,18 +46,8 @@ namespace SCDTanks
             richTextBox1.AppendText($"[{DateTime.Now.ToLongTimeString()}]:{text}");
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
-            string[,] maps = new string[int.Parse(SharedResources.GameInfo.MapInfo.RowLen), int.Parse(SharedResources.GameInfo.MapInfo.ColLen)];
-            Array.Copy(SharedResources.GameInfo.MapInfo.Map, maps, maps.Length);
-            for(int i=0;i< maps.GetLength(0); i++)
-            {
-                for(int j=0;j<maps.GetLength(1);j++)
-                {
-                    Console.Write(maps[i, j]+" ");
-                }
-                Console.WriteLine("");
-            }
         }
     }
 }
