@@ -17,6 +17,7 @@ namespace SCDTanks
         /// 我方坦克，持久化数据
         /// </summary>
         public static List<TankInfo> OurTanks { get; set; }
+        public static TankInfo AttTank { get; set; }
 
     }
 }

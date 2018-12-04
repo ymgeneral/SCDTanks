@@ -29,8 +29,14 @@ namespace SCDTanks.Model
                     return FindEnemy(true);
                 }
             }
-            return FindEnemy(false);
-
+            if(info.Destination.Value!=info.Location.Value)
+            {
+                return FindEnemy(false);
+            }
+            else
+            {
+                return base.Defend();
+            }
         }
         private TanksAction FindEnemy(bool isfindBoss)
         {
@@ -40,7 +46,7 @@ namespace SCDTanks.Model
             {
                 if (canAttTanks.Count >= frindTanks.Count)
                 {
-                    return Attack(canAttTanks);
+                    return Attack(canAttTanks,null);
                 }
                 else
                 {
@@ -56,16 +62,16 @@ namespace SCDTanks.Model
                     {
                         if (tinfo != null)
                         {
-                            tinfo.NextCommand = TankActionEnum.Support;
+                            tinfo.NextCommand = TankActionEnum.Attack;
                         }
                     }
-                    return base.Attack(canAttTanks);
+                    return base.Attack(canAttTanks, enemyTanks);
                 }
                 if (enemyTanks.Count == 1)
                 {
                     if (base.TankInfo.Contrast(enemyTanks[0]))
                     {
-                        return base.Attack(canAttTanks);
+                        return base.Attack(canAttTanks, enemyTanks);
                     }
                     else
                     {

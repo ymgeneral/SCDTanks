@@ -49,8 +49,19 @@ namespace SCDTanks
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            baseclass baseclass = new a();
-            baseclass.Star();
+            List<TankInfo> list = new List<TankInfo>();
+            list.Add(new TankInfo { ShengYuShengMing=2 });
+            list.Add(new TankInfo { ShengYuShengMing = 5 });
+            list.Add(new TankInfo { ShengYuShengMing = 3 });
+            list.Add(new TankInfo { ShengYuShengMing = 9 });
+            list.Add(new TankInfo { ShengYuShengMing = 4 });
+            list.Add(new TankInfo { ShengYuShengMing = 1 });
+            list.Sort();
+            foreach(TankInfo i in list)
+            {
+                Debug.WriteLine(i.ShengYuShengMing);
+            }
+           // Debug.WriteLine(point.X);
         }
         class baseclass
         {

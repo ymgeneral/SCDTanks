@@ -11,6 +11,7 @@ namespace SCDTanks.Model
         protected TankInfo TankInfo { get; set; }
         protected abstract TanksAction AbsGetAction(GameInfo controller, TankInfo info);
         protected List<Point> CanAttackPoint { get; set; }
+        protected bool IsGod = false;
         /// <summary>
         /// 获取坦克下一步动作
         /// </summary>
@@ -19,7 +20,17 @@ namespace SCDTanks.Model
         /// <returns></returns>
         public TanksAction GetNextAction(GameInfo controller, TankInfo info)
         {
-
+            if (controller.GodCount > 0)
+            {
+                if (this.TankInfo.IsDie && this.TankInfo.Adv != TankAdv.Speed)
+                {
+                    IsGod = true;
+                }
+                if (this.TankInfo.Adv == TankAdv.Defend && this.TankInfo.ShengYuShengMing < 2)
+                {
+                    IsGod = true;
+                }
+            }
             this.TankInfo = info;
             Controller = controller;
             CanAttackPoint = GetAttackRange();
@@ -27,10 +38,8 @@ namespace SCDTanks.Model
             {
                 case TankActionEnum.Null:
                     return AbsGetAction(Controller, this.TankInfo);
-                case TankActionEnum.Support:
-                    return Support();
                 case TankActionEnum.Attack:
-                    return Attack();
+                    return Attack(null, null);
                 case TankActionEnum.Boss:
                     return Boss();
                 case TankActionEnum.Defend:
@@ -101,8 +110,20 @@ namespace SCDTanks.Model
         /// <returns></returns>
         protected List<TankInfo> FindNearFriendly()
         {
-            return null;
+            List<TankInfo> tankInfos = new List<TankInfo>();
+            foreach (TankInfo info in SharedResources.OurTanks)
+            {
+                if (Math.Abs(info.Location.Value.X - this.TankInfo.Location.Value.X) <= 1 && Math.Abs(info.Location.Value.Y - this.TankInfo.Location.Value.Y) <= 1)
+                {
+                    tankInfos.Add(info);
+                }
+            }
+            return tankInfos;
         }
+        /// <summary>
+        /// 获取攻击范围
+        /// </summary>
+        /// <returns></returns>
         protected List<Point> GetAttackRange()
         {
             List<Point> scopeList = new List<Point>();
@@ -168,6 +189,11 @@ namespace SCDTanks.Model
                 if (this.CanAttackPoint.Contains(info.Location.Value))
                     canAtt.Add(info);
             }
+            if (this.Controller.BossInfo.Location != null)
+            {
+                if (this.CanAttackPoint.Contains(this.Controller.BossInfo.Location.Value))
+                    canAtt.Add(this.Controller.BossInfo);
+            }
             return canAtt;
         }
         /// <summary>
@@ -175,14 +201,144 @@ namespace SCDTanks.Model
         /// </summary>
         public virtual TanksAction Defend()
         {
-            return null;
+            return new TanksAction()
+            {
+                UseGlod = IsGod,
+                Length = this.TankInfo.SheCheng,
+                Direction = DirectionEnum.WAIT.ToString(),
+                TId = this.TankInfo.TId,
+                ActionType = ActionTypeEnum.FFIRE.ToString()
+            };
         }
         /// <summary>
         /// 进攻
         /// </summary>
-        protected virtual TanksAction Attack(List<TankInfo> canAttTanks = null)
+        protected virtual TanksAction Attack(List<TankInfo> canAttTanks, List<TankInfo> nearTanks)
         {
-            return null;
+
+            if (canAttTanks == null && nearTanks == null)
+            {
+                canAttTanks = CanAttackEnemy();
+                nearTanks = FindNearEnemy();
+            }
+            if (SharedResources.AttTank != null)
+            {
+                if (canAttTanks.Contains(SharedResources.AttTank))
+                {
+                    return new TanksAction()
+                    {
+                        UseGlod = IsGod,
+                        Length = this.TankInfo.SheCheng,
+                        Direction = Conversion(this.TankInfo.Location.Value, SharedResources.AttTank.Location.Value).ToString(),
+                        TId = this.TankInfo.TId,
+                        ActionType = ActionTypeEnum.FFIRE.ToString()
+                    };
+                }
+                else
+                {
+                    TankInfo tinfo = GetAttTank(canAttTanks);
+                    return  this.Find(GetAttPoint(tinfo), false);
+                }
+            }
+            if (canAttTanks != null)
+            {
+                TankInfo tinfo = GetAttTank(canAttTanks);
+                return new TanksAction()
+                {
+                    UseGlod = IsGod,
+                    Length = this.TankInfo.SheCheng,
+                    Direction = Conversion(this.TankInfo.Location.Value, tinfo.Location.Value).ToString(),
+                    TId = this.TankInfo.TId,
+                    ActionType = ActionTypeEnum.FFIRE.ToString()
+                };
+            }
+            else
+            {
+                if (nearTanks == null)
+                {
+                    return Defend();
+                }
+                TankInfo tinfo = GetAttTank(nearTanks);
+                return  this.Find(GetAttPoint(tinfo), false);
+            }
+        }
+        /// <summary>
+        /// 获取进攻位置
+        /// </summary>
+        /// <returns></returns>
+        private Point GetAttPoint(TankInfo tinfo)
+        {
+            Point point = tinfo.Location.Value;
+            List<Point> listPoint = new List<Point>();
+            int row = point.X - this.TankInfo.SheCheng >= 0 ? point.X - this.TankInfo.SheCheng : 0;
+            int col = point.Y;
+            Point newPoint = new Point(row, col);
+            if (IsRoad(newPoint))
+            {
+                listPoint.Add(newPoint);
+            }
+            row = point.X + this.TankInfo.SheCheng < int.Parse(this.Controller.SourceInfo.MapInfo.RowLen) ? point.X + this.TankInfo.SheCheng : int.Parse(this.Controller.SourceInfo.MapInfo.RowLen) - this.TankInfo.SheCheng;
+            newPoint = new Point(row, col);
+            if (IsRoad(newPoint))
+            {
+                listPoint.Add(newPoint);
+            }
+            row = point.X;
+            col = point.Y - this.TankInfo.SheCheng >= 0 ? point.Y - this.TankInfo.SheCheng : 0;
+            newPoint = new Point(row, col);
+            if (IsRoad(newPoint))
+            {
+                listPoint.Add(newPoint);
+            }
+            col = point.Y + this.TankInfo.SheCheng < int.Parse(this.Controller.SourceInfo.MapInfo.ColLen) ? point.Y + this.TankInfo.SheCheng : int.Parse(this.Controller.SourceInfo.MapInfo.ColLen) - this.TankInfo.SheCheng;
+            newPoint = new Point(row, col);
+            if (IsRoad(newPoint))
+            {
+                listPoint.Add(newPoint);
+            }
+            int index = 0, count = -1;
+            int delta1;
+            int delta2;
+            for (int i = 0; i < listPoint.Count; i++)
+            {
+                delta1 = Math.Abs(listPoint[i].X - this.TankInfo.Location.Value.X);
+                delta2 = Math.Abs(listPoint[i].Y - this.TankInfo.Location.Value.Y);
+                if (count == -1 || count > delta1 + delta2)
+                {
+                    count = delta1 + delta2;
+                    index = i;
+                }
+            }
+            return listPoint[index];
+        }
+        /// <summary>
+        /// 获取攻击目标
+        /// </summary>
+        /// <param name="canAttTanks"></param>
+        /// <returns></returns>
+        private TankInfo GetAttTank(List<TankInfo> canAttTanks)
+        {
+            if (canAttTanks == null || canAttTanks.Count == 0)
+                return null;
+            canAttTanks.Sort();
+            TankInfo rinfo = canAttTanks[0];
+            foreach (TankInfo info in canAttTanks)
+            {
+                if (rinfo == info)
+                {
+                    continue;
+                }
+                if (info.ShengYuShengMing <= this.TankInfo.Gongji)
+                {
+                    rinfo = info;
+                    break;
+                }
+                if (info.Adv == TankAdv.Attack)
+                {
+                    rinfo = info;
+                }
+            }
+            return rinfo;
         }
         /// <summary>
         /// 探路
@@ -191,20 +347,72 @@ namespace SCDTanks.Model
         {
             if (this.TankInfo.Destination != null)
             {
-                return Find(this.TankInfo.Destination.Value);
+                if (!IsRoad(this.TankInfo.Destination.Value))
+                {
+                    this.TankInfo.Destination = GetNearRoad(this.TankInfo.Destination.Value);
+                }
+                return Find(this.TankInfo.Destination.Value,false);
             }
             else
             {
-                return null;
+                return Null();
             }
         }
-        private TanksAction Find(Point tar)
+        /// <summary>
+        /// 获取附近的路
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        private Point GetNearRoad(Point point)
+        {
+            int row = point.X - 1 >= 0 ? point.X - 1 : 0;
+            int col = point.Y;
+            Point newPoint = new Point(row, col);
+            if (IsRoad(newPoint))
+            {
+                return newPoint;
+            }
+            row = point.X + 1 < int.Parse(this.Controller.SourceInfo.MapInfo.RowLen) ? point.X + 1 : int.Parse(this.Controller.SourceInfo.MapInfo.RowLen) - 1;
+            newPoint = new Point(row, col);
+            if (IsRoad(newPoint))
+            {
+                return newPoint;
+            }
+            row = point.X;
+            col = point.Y - 1 >= 0 ? point.Y - 1 : 0;
+            newPoint = new Point(row, col);
+            if (IsRoad(newPoint))
+            {
+                return newPoint;
+            }
+            col = point.Y + 1 < int.Parse(this.Controller.SourceInfo.MapInfo.ColLen) ? point.Y + 1 : int.Parse(this.Controller.SourceInfo.MapInfo.ColLen) - 1;
+            newPoint = new Point(row, col);
+            if (IsRoad(newPoint))
+            {
+                return newPoint;
+            }
+            newPoint = point;
+            return newPoint;
+        }
+        private bool IsRoad(Point point)
+        {
+            string str = this.Controller.SourceInfo.MapInfo.Map[point.X, point.Y];
+            if (str.Equals("M1") || str.Equals("M3") || str.Equals("M3"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private TanksAction Find(Point tar ,bool avoid)
         {
             Astar astar = new Astar
             {
                 Team = Controller.SourceInfo.Team
             };
-            ANode node = astar.Star(this.TankInfo.Location.Value, tar, GetTempMaps());
+            ANode node = astar.Star(this.TankInfo.Location.Value, tar, GetTempMaps(avoid));
             Stack<Point> points = GetDirection(node);
             Point next = points.Pop();
             int length = 1;
@@ -219,7 +427,7 @@ namespace SCDTanks.Model
             }
             TanksAction tanksAction = new TanksAction()
             {
-                UseGlod = false,
+                UseGlod = IsGod,
                 Length = length,
                 Direction = this.Conversion(this.TankInfo.Location.Value, next).ToString(),
                 TId = this.TankInfo.TId,
@@ -233,39 +441,135 @@ namespace SCDTanks.Model
         /// </summary>
         protected virtual TanksAction God()
         {
-            return Find(GetGodb());
+            return Find(GetGodb(),false);
         }
         /// <summary>
         /// 攻略BOSS
         /// </summary>
         protected virtual TanksAction Boss()
         {
-            return null;
+
+            List<TankInfo> canAtt = CanAttackEnemy();
+            if (canAtt.Contains(this.Controller.BossInfo))
+            {
+                return new TanksAction()
+                {
+                    UseGlod = IsGod,
+                    Length = this.TankInfo.SheCheng,
+                    Direction = Conversion(this.TankInfo.Location.Value, this.Controller.BossInfo.Location.Value).ToString(),
+                    TId = this.TankInfo.TId,
+                    ActionType = ActionTypeEnum.FFIRE.ToString()
+                };
+            }
+            else
+            {
+                return new TanksAction()
+                {
+                    UseGlod = IsGod,
+                    Length = this.TankInfo.YiDong,
+                    Direction = Conversion(this.TankInfo.Location.Value, GetAttPoint(this.Controller.BossInfo)).ToString(),
+                    TId = this.TankInfo.TId,
+                    ActionType = ActionTypeEnum.MOVE.ToString()
+                };
+            }
         }
         /// <summary>
         /// 撤退
         /// </summary>
         protected virtual TanksAction Retreat()
         {
-            return null;
-        }
-        /// <summary>
-        /// 支援
-        /// </summary>
-        protected virtual TanksAction Support()
-        {
-            return null;
+            Point tempPoint = this.TankInfo.Location.Value;
+            int row = this.TankInfo.Location.Value.X;
+            int col = this.TankInfo.Location.Value.Y;
+            List<int> list = new List<int>();
+            int up = 999, down = 999, left = 999, right = 999;
+            //上
+            if (row - this.TankInfo.YiDong >= 0)
+            {
+                up = 0;
+                this.TankInfo.Location = new Point(row - this.TankInfo.YiDong, col);
+                up += CanAttackEnemy().Count * 100;
+                up += FindNearEnemy().Count;
+                list.Add(up);
+            }
+            //下
+            if (row + this.TankInfo.YiDong < int.Parse(this.Controller.SourceInfo.MapInfo.RowLen))
+            {
+
+                this.TankInfo.Location = new Point(row + this.TankInfo.YiDong, col);
+                down = 0;
+                down += CanAttackEnemy().Count * 100;
+                down += FindNearEnemy().Count;
+                list.Add(down);
+            }
+            //左
+            if (col - this.TankInfo.YiDong >= 0)
+            {
+                this.TankInfo.Location = new Point(row, col - this.TankInfo.YiDong);
+                left = 0;
+                left += CanAttackEnemy().Count * 100;
+                left += FindNearEnemy().Count;
+                list.Add(left);
+            }
+            //右
+            if (col + this.TankInfo.YiDong < int.Parse(this.Controller.SourceInfo.MapInfo.ColLen))
+            {
+                this.TankInfo.Location = new Point(row, col + this.TankInfo.YiDong);
+                right = 0;
+                right += CanAttackEnemy().Count * 100;
+                right += FindNearEnemy().Count;
+                list.Add(right);
+            }
+            list.Sort();
+            if (list.Count > 0)
+            {
+                string dir = "";
+                do
+                {
+                    if (list[0] == up)
+                    {
+                        dir = DirectionEnum.UP.ToString();
+                        break;
+                    }
+                    if (list[0] == left)
+                    {
+                        dir = DirectionEnum.LEFT.ToString();
+                        break;
+                    }
+                    if (list[0] == right)
+                    {
+                        dir = DirectionEnum.RIGHT.ToString();
+                        break;
+                    }
+                    if (list[0] == down)
+                    {
+                        dir = DirectionEnum.DOWN.ToString();
+                        break;
+                    }
+                } while (false);
+                return new TanksAction()
+                {
+                    UseGlod = IsGod,
+                    Length = this.TankInfo.YiDong,
+                    Direction = dir,
+                    TId = this.TankInfo.TId,
+                    ActionType = ActionTypeEnum.MOVE.ToString()
+                };
+            }
+            else
+            {
+                return Attack(null, null);
+            }
         }
         /// <summary>
         /// 空指令
         /// </summary>
-
         protected virtual TanksAction Null()
         {
             TanksAction tanksAction = new TanksAction()
             {
-                UseGlod = false,
-                Length = 0,
+                UseGlod = IsGod,
+                Length = this.TankInfo.SheCheng,
                 Direction = DirectionEnum.UP.ToString(),
                 TId = this.TankInfo.TId,
                 ActionType = ActionTypeEnum.FFIRE.ToString()
@@ -302,7 +606,7 @@ namespace SCDTanks.Model
         /// 获取临时地图
         /// </summary>
         /// <returns></returns>
-        protected string[,] GetTempMaps()
+        protected string[,] GetTempMaps(bool avoid)
         {
             string[,] maps = new string[int.Parse(Controller.SourceInfo.MapInfo.RowLen), int.Parse(Controller.SourceInfo.MapInfo.ColLen)];
             Array.Copy(Controller.SourceInfo.MapInfo.Map, maps, maps.Length);
@@ -314,6 +618,61 @@ namespace SCDTanks.Model
                     maps[p[1].X, p[1].Y] = "M4";
                 }
             }
+            if (avoid)
+                foreach (TankInfo info in this.Controller.EnemyTanks)
+                {
+                    if (info.Location != null)
+                    {
+                        for (int i = 1; i < info.SheCheng; i++)
+                        {
+                            if (info.Location.Value.X - i < 0) break;
+                            if (maps[info.Location.Value.X - i, info.Location.Value.Y].Equals("M1") || maps[info.Location.Value.X - i, info.Location.Value.Y].Equals("M3"))
+                            {
+                                maps[info.Location.Value.X - i, info.Location.Value.Y] = "M4";
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        for (int i = 1; i < info.SheCheng; i++)
+                        {
+                            if (info.Location.Value.X + i < 0) break;
+                            if (maps[info.Location.Value.X + i, info.Location.Value.Y].Equals("M1") || maps[info.Location.Value.X + i, info.Location.Value.Y].Equals("M3"))
+                            {
+                                maps[info.Location.Value.X + i, info.Location.Value.Y] = "M4";
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        for (int i = 1; i < info.SheCheng; i++)
+                        {
+                            if (info.Location.Value.Y - i < 0) break;
+                            if (maps[info.Location.Value.X, info.Location.Value.Y-i].Equals("M1") || maps[info.Location.Value.X, info.Location.Value.Y-i].Equals("M3"))
+                            {
+                                maps[info.Location.Value.X, info.Location.Value.Y-i] = "M4";
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        for (int i = 1; i < info.SheCheng; i++)
+                        {
+                            if (info.Location.Value.Y + i < 0) break;
+                            if (maps[info.Location.Value.X, info.Location.Value.Y + i].Equals("M1") || maps[info.Location.Value.X, info.Location.Value.Y + i].Equals("M3"))
+                            {
+                                maps[info.Location.Value.X, info.Location.Value.Y + i] = "M4";
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
             return maps;
         }
         /// <summary>

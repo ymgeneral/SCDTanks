@@ -36,10 +36,6 @@ namespace SCDTanks.Model
         /// </summary>
         Retreat,
         /// <summary>
-        /// 支援
-        /// </summary>
-        Support,
-        /// <summary>
         /// 空指令
         /// </summary>
         Null

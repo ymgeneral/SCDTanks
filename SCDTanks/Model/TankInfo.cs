@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SCDTanks.Model
 {
-    public class TankInfo
+    public class TankInfo:IComparable
     {
         [JsonProperty(PropertyName = "tId")]
         public string TId { get; set; }
@@ -133,6 +133,19 @@ namespace SCDTanks.Model
                     UseGlod = false
                 };
                 return tanks;
+            }
+        }
+
+        public int CompareTo(object obj)
+        {
+            TankInfo tank = obj as TankInfo;
+            if(tank!=null)
+            {
+                return this.ShengYuShengMing - tank.ShengYuShengMing;
+            }
+            else
+            {
+                return -1;
             }
         }
     }

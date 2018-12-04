@@ -54,6 +54,7 @@ namespace SCDTanks.Model
             GodB = new List<Point>();
             EnemyTanks = new List<TankInfo>();
             Fogs = new List<Point>();
+            SharedResources.AttTank = null;
             SourceInfo = info;
             NextPoint.Clear();
             FillTanks();
