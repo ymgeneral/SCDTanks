@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace SCDTanks.Model
@@ -22,6 +23,7 @@ namespace SCDTanks.Model
             {
                 if(controller.BossInfo.ShengYuShengMing<5)
                 {
+                    info.Destination = controller.BossInfo.Location.Value;
                     return base.Boss();
                 }
                 else
@@ -46,6 +48,7 @@ namespace SCDTanks.Model
             {
                 if (canAttTanks.Count >= frindTanks.Count)
                 {
+                    Debug.WriteLine("发现敌人，开火");
                     return Attack(canAttTanks,null);
                 }
                 else
@@ -85,6 +88,7 @@ namespace SCDTanks.Model
             }
             if (isfindBoss)
             {
+                this.TankInfo.Destination = Controller.BossInfo.Location.Value;
                 return Boss();
             }
                 return base.Find();

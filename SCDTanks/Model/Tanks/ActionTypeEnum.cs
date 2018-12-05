@@ -9,6 +9,6 @@ namespace SCDTanks.Model
     public enum ActionTypeEnum
     {
         MOVE,
-        FFIRE
+        FIRE
     }
 }

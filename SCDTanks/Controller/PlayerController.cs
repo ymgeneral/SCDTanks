@@ -17,38 +17,55 @@ namespace SCDTanks.Controller
         [HttpPost]
         public JsonResults<List<TanksAction>> Action(ReceiveInfo receiveInfo)
         {
-            //try
-            //{
-            GameInfo gameInfo = new GameInfo(receiveInfo);
-            List<TanksAction> tanksActions = new List<TanksAction>();
-            TanksAction tanksAction = null;
-            foreach (TankInfo info in SharedResources.OurTanks)
+            try
             {
-                tanksAction = info.GetAction(gameInfo);
-                if (tanksAction != null)
-                    tanksActions.Add(tanksAction);
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+                GameInfo gameInfo = new GameInfo(receiveInfo);
+                List<TanksAction> tanksActions = new List<TanksAction>();
+                TanksAction tanksAction = null;
+                foreach (TankInfo info in SharedResources.OurTanks)
+                {
+                    tanksAction = info.GetAction(gameInfo);
+                    if (tanksAction != null)
+                        tanksActions.Add(tanksAction);
+                }
+
+                JsonResults<List<TanksAction>> ret = new JsonResults<List<TanksAction>>
+                {
+                    Action = @"/action",
+                    Code = "0",
+                    Msg = "succeeded",
+                    OK = true,
+                    Data = tanksActions
+                };
+                watch.Stop();
+                Debug.WriteLine(watch.ElapsedMilliseconds);
+                return ret;
             }
-            JsonResults<List<TanksAction>> ret = new JsonResults<List<TanksAction>>
+            catch (Exception ex)
             {
-                Action = @"/action",
-                Code = "0",
-                Msg = "succeeded",
-                OK = true,
-                Data = tanksActions
-            };
-            return ret;
-            //}
-            //catch(Exception ex)
-            //{
-            //    JsonResults<List<TanksAction>> ret = new JsonResults<List<TanksAction>>
-            //    {
-            //        Action = @"/action",
-            //        Code = "1",
-            //        Msg = ex.Message,
-            //        OK = false
-            //    };
-            //    return ret;
-            //}
+                List<TanksAction> tanksActions = new List<TanksAction>();
+                foreach (TankInfo info in SharedResources.OurTanks)
+                {
+                    tanksActions.Add(new TanksAction {
+                        ActionType = ActionTypeEnum.FIRE.ToString(),
+                        Direction = "UP",
+                       Length=info.SheCheng,
+                       TId=info.TId,
+                        UseGlod=false
+                    });
+                }
+                JsonResults<List<TanksAction>> ret = new JsonResults<List<TanksAction>>
+                {
+                    Action = @"/action",
+                    Code = "0",
+                    Msg = "succeeded",
+                    OK = true,
+                    Data = tanksActions
+                };
+                return ret;
+            }
         }
         [HttpPost]
         public JsonResults<string> Init(ReceiveInfo receiveInfo)

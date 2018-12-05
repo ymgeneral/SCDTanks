@@ -13,6 +13,10 @@ namespace SCDTanks.Model
     /// </summary>
     public class GameInfo
     {
+        ///// <summary>
+        ///// 剩余坦克数
+        ///// </summary>
+        //public int EnemyTanks { get; set; }
         public TankInfo Target { get; set; }
         /// <summary>
         /// 游戏信息
@@ -65,7 +69,7 @@ namespace SCDTanks.Model
             if (SourceInfo.Boss.Tanks != null && SourceInfo.Boss.Tanks.Count > 0)
                 BossInfo = SourceInfo.Boss.Tanks[0];
 
-            GodCount = SourceInfo.Gold;
+            GodCount = SourceInfo.Gold+SourceInfo.Extend;
             if (SourceInfo.Team.Equals("tB"))
             {
                 if (SharedResources.OurTanks == null)
@@ -156,6 +160,35 @@ namespace SCDTanks.Model
                     }
                 }
             }
+            if(GodB.Count>0)
+            {
+                SetGodTank();
+            }
+        }
+
+        private void SetGodTank()
+        {
+            int delta1;
+            int delta2;
+            int count = 9999;
+            TankInfo tankInfo = null;
+            foreach (TankInfo tank in SharedResources.OurTanks)
+            {
+                foreach (Point point in GodB)
+                {
+                    delta1 = Math.Abs(tank.Location.Value.X - point.X);
+                    delta2 = Math.Abs(tank.Location.Value.Y - point.Y);
+                    if(count>(delta1+delta2)/tank.YiDong)
+                    {
+                        count = delta1 + delta2;
+                        tankInfo = tank;
+                    }
+                }
+            }
+            if(tankInfo!=null)
+            {
+                tankInfo.NextCommand = TankActionEnum.God;
+            }
         }
         /// <summary>
         /// 设置地方坦克坐标
@@ -165,7 +198,7 @@ namespace SCDTanks.Model
         private void SetEnemyLocation(Point point, string tankId)
         {
             TankInfo info = EnemyTanks.FirstOrDefault(p => p.TId.Equals(tankId));
-            if (info != null)
+            if (info != null && info.ShengYuShengMing>0)
                 info.Location = point;
         }
         /// <summary>

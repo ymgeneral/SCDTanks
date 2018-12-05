@@ -21,7 +21,8 @@ namespace SCDTanks.Model
         public TeamInfo TeamB { get; set; }
         [JsonProperty(PropertyName = "tC")]
         public TeamInfo TeamC { get; set; }
-
+        [JsonProperty(PropertyName = "extend")]
+        public int Extend { get; set; } = 0;
     }
     public class MapInfo
     {

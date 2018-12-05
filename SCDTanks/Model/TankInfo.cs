@@ -126,7 +126,7 @@ namespace SCDTanks.Model
             {
                 TanksAction tanks = new TanksAction
                 {
-                    ActionType = ActionTypeEnum.FFIRE.ToString(),
+                    ActionType = ActionTypeEnum.FIRE.ToString(),
                     Direction = DirectionEnum.UP.ToString(),
                     TId = this.TId,
                     Length = this.SheCheng,

@@ -1,6 +1,7 @@
 ﻿using SCDTanks.Algorithm;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace SCDTanks.Model
@@ -50,6 +51,10 @@ namespace SCDTanks.Model
                     return God();
                 case TankActionEnum.Retreat:
                     return Retreat();
+            }
+            if (SharedResources.AttTank != null)
+            {
+                return Attack(null, null);
             }
             return AbsGetAction(Controller, this.TankInfo);
         }
@@ -201,13 +206,23 @@ namespace SCDTanks.Model
         /// </summary>
         public virtual TanksAction Defend()
         {
+            DirectionEnum direction = DirectionEnum.LEFT;
+            Random random = new Random(4);
+            switch (random.Next())
+            {
+                case 0:
+                    direction = DirectionEnum.LEFT; break;
+                case 1: direction = DirectionEnum.UP; break;
+                case 2: direction = DirectionEnum.RIGHT; break;
+                case 3: direction = DirectionEnum.DOWN; break;
+            }
             return new TanksAction()
             {
                 UseGlod = IsGod,
                 Length = this.TankInfo.SheCheng,
-                Direction = DirectionEnum.WAIT.ToString(),
+                Direction = direction.ToString(),
                 TId = this.TankInfo.TId,
-                ActionType = ActionTypeEnum.FFIRE.ToString()
+                ActionType = ActionTypeEnum.FIRE.ToString()
             };
         }
         /// <summary>
@@ -231,25 +246,26 @@ namespace SCDTanks.Model
                         Length = this.TankInfo.SheCheng,
                         Direction = Conversion(this.TankInfo.Location.Value, SharedResources.AttTank.Location.Value).ToString(),
                         TId = this.TankInfo.TId,
-                        ActionType = ActionTypeEnum.FFIRE.ToString()
+                        ActionType = ActionTypeEnum.FIRE.ToString()
                     };
                 }
                 else
                 {
-                    TankInfo tinfo = GetAttTank(canAttTanks);
-                    return  this.Find(GetAttPoint(tinfo), false);
+                    if (canAttTanks == null || canAttTanks.Count == 0)
+                        return this.Find(GetAttPoint(SharedResources.AttTank), false);
                 }
             }
-            if (canAttTanks != null)
+            if (canAttTanks != null && canAttTanks.Count > 0)
             {
                 TankInfo tinfo = GetAttTank(canAttTanks);
+                SharedResources.AttTank = tinfo;
                 return new TanksAction()
                 {
                     UseGlod = IsGod,
                     Length = this.TankInfo.SheCheng,
                     Direction = Conversion(this.TankInfo.Location.Value, tinfo.Location.Value).ToString(),
                     TId = this.TankInfo.TId,
-                    ActionType = ActionTypeEnum.FFIRE.ToString()
+                    ActionType = ActionTypeEnum.FIRE.ToString()
                 };
             }
             else
@@ -259,7 +275,9 @@ namespace SCDTanks.Model
                     return Defend();
                 }
                 TankInfo tinfo = GetAttTank(nearTanks);
-                return  this.Find(GetAttPoint(tinfo), false);
+                SharedResources.AttTank = tinfo;
+                Debug.WriteLine("11");
+                return this.Find(GetAttPoint(tinfo), false);
             }
         }
         /// <summary>
@@ -309,6 +327,8 @@ namespace SCDTanks.Model
                     index = i;
                 }
             }
+            if (listPoint.Count <= 0)
+                return point;
             return listPoint[index];
         }
         /// <summary>
@@ -351,7 +371,7 @@ namespace SCDTanks.Model
                 {
                     this.TankInfo.Destination = GetNearRoad(this.TankInfo.Destination.Value);
                 }
-                return Find(this.TankInfo.Destination.Value,false);
+                return Find(this.TankInfo.Destination.Value, true);
             }
             else
             {
@@ -363,7 +383,7 @@ namespace SCDTanks.Model
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        private Point GetNearRoad(Point point)
+        protected Point GetNearRoad(Point point)
         {
             int row = point.X - 1 >= 0 ? point.X - 1 : 0;
             int col = point.Y;
@@ -406,13 +426,17 @@ namespace SCDTanks.Model
                 return false;
             }
         }
-        private TanksAction Find(Point tar ,bool avoid)
+        private TanksAction Find(Point tar, bool avoid)
         {
             Astar astar = new Astar
             {
                 Team = Controller.SourceInfo.Team
             };
             ANode node = astar.Star(this.TankInfo.Location.Value, tar, GetTempMaps(avoid));
+            if (node.Position == this.TankInfo.Location.Value)
+            {
+                return Defend();
+            }
             Stack<Point> points = GetDirection(node);
             Point next = points.Pop();
             int length = 1;
@@ -441,7 +465,7 @@ namespace SCDTanks.Model
         /// </summary>
         protected virtual TanksAction God()
         {
-            return Find(GetGodb(),false);
+            return Find(GetGodb(), false);
         }
         /// <summary>
         /// 攻略BOSS
@@ -458,7 +482,7 @@ namespace SCDTanks.Model
                     Length = this.TankInfo.SheCheng,
                     Direction = Conversion(this.TankInfo.Location.Value, this.Controller.BossInfo.Location.Value).ToString(),
                     TId = this.TankInfo.TId,
-                    ActionType = ActionTypeEnum.FFIRE.ToString()
+                    ActionType = ActionTypeEnum.FIRE.ToString()
                 };
             }
             else
@@ -572,7 +596,7 @@ namespace SCDTanks.Model
                 Length = this.TankInfo.SheCheng,
                 Direction = DirectionEnum.UP.ToString(),
                 TId = this.TankInfo.TId,
-                ActionType = ActionTypeEnum.FFIRE.ToString()
+                ActionType = ActionTypeEnum.FIRE.ToString()
             };
             return tanksAction;
         }
@@ -637,7 +661,7 @@ namespace SCDTanks.Model
                         }
                         for (int i = 1; i < info.SheCheng; i++)
                         {
-                            if (info.Location.Value.X + i < 0) break;
+                            if (info.Location.Value.X + i >= int.Parse(this.Controller.SourceInfo.MapInfo.RowLen)) break;
                             if (maps[info.Location.Value.X + i, info.Location.Value.Y].Equals("M1") || maps[info.Location.Value.X + i, info.Location.Value.Y].Equals("M3"))
                             {
                                 maps[info.Location.Value.X + i, info.Location.Value.Y] = "M4";
@@ -650,9 +674,9 @@ namespace SCDTanks.Model
                         for (int i = 1; i < info.SheCheng; i++)
                         {
                             if (info.Location.Value.Y - i < 0) break;
-                            if (maps[info.Location.Value.X, info.Location.Value.Y-i].Equals("M1") || maps[info.Location.Value.X, info.Location.Value.Y-i].Equals("M3"))
+                            if (maps[info.Location.Value.X, info.Location.Value.Y - i].Equals("M1") || maps[info.Location.Value.X, info.Location.Value.Y - i].Equals("M3"))
                             {
-                                maps[info.Location.Value.X, info.Location.Value.Y-i] = "M4";
+                                maps[info.Location.Value.X, info.Location.Value.Y - i] = "M4";
                             }
                             else
                             {
@@ -661,7 +685,7 @@ namespace SCDTanks.Model
                         }
                         for (int i = 1; i < info.SheCheng; i++)
                         {
-                            if (info.Location.Value.Y + i < 0) break;
+                            if (info.Location.Value.Y + i >= int.Parse(this.Controller.SourceInfo.MapInfo.ColLen)) break;
                             if (maps[info.Location.Value.X, info.Location.Value.Y + i].Equals("M1") || maps[info.Location.Value.X, info.Location.Value.Y + i].Equals("M3"))
                             {
                                 maps[info.Location.Value.X, info.Location.Value.Y + i] = "M4";
@@ -693,7 +717,7 @@ namespace SCDTanks.Model
                 return DirectionEnum.RIGHT;
             if (npoint.Y < spoint.Y)
                 return DirectionEnum.LEFT;
-
+            Controller.NextPoint.Add(new Point[] { spoint, npoint });
             return DirectionEnum.WAIT;
         }
         /// <summary>
@@ -719,7 +743,6 @@ namespace SCDTanks.Model
             }
             points[0] = node.Position; //当前位置
             points[1] = retPoint.Peek();//下一个位置
-            Controller.NextPoint.Add(points);
             return retPoint;
         }
     }
